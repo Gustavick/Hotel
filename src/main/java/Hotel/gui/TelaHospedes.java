@@ -287,16 +287,6 @@ public TelaHospedes() {
           int selectedRow = tblHospedes.getSelectedRow();
     System.out.println("📌 Linha clicada: " + selectedRow);
 
-    if (selectedRow != -1) {
-        txtNome.setText(tblHospedes.getValueAt(selectedRow, 1).toString());
-        txtCpf.setText(tblHospedes.getValueAt(selectedRow, 2).toString());
-        txtTelefone.setText(tblHospedes.getValueAt(selectedRow, 3).toString());
-        txtEmail.setText(tblHospedes.getValueAt(selectedRow, 4).toString());
-        txtSexo.setText(tblHospedes.getValueAt(selectedRow, 5).toString());;
-        txtDataNascimento.setText(tblHospedes.getValueAt(selectedRow, 8).toString());
-
-        System.out.println("📌 Paciente carregado: " + txtNome.getText());
-    }
     }//GEN-LAST:event_tblHospedesMouseClicked
 
     /**
@@ -507,6 +497,8 @@ private void carregarCampos() {
         txtTelefone.setText(tblHospedes.getValueAt(selectedRow, 3).toString());
         txtEmail.setText(tblHospedes.getValueAt(selectedRow, 4).toString());
         txtSexo.setText(tblHospedes.getValueAt(selectedRow, 5).toString());
+        
+        
     } else {
         System.out.println("Nenhum hóspede selecionado.");
     }
