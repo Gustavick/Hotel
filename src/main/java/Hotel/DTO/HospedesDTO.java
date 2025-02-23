@@ -17,9 +17,10 @@ public class HospedesDTO {
     private String telefone;
     private String email;
     private String sexo;
+    
+   
 
-    public HospedesDTO(int id, String nome, String cpf, String dataNascimento, String telefone, String email, String sexo) {
-        this.id = id;
+    public HospedesDTO( String nome, String cpf, String dataNascimento, String telefone, String email, String sexo) {
         this.nome = nome;
         this.cpf = cpf;
         this.dataNascimento = dataNascimento;

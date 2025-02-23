@@ -4,6 +4,21 @@
  */
 package Hotel.gui;
 
+import ConexaoBD.Conexao;
+import Hotel.DAO.HospedesDAO;
+import Hotel.DTO.HospedesDTO;
+import java.net.URL;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author luizg
@@ -13,9 +28,19 @@ public class TelaHospedes extends javax.swing.JFrame {
     /**
      * Creates new form Hospedes
      */
-    public TelaHospedes() {
-        initComponents();
+  private HospedesDAO hospedesDAO;
+
+public TelaHospedes() {
+    initComponents();
+    try {
+        Connection conexao = new Conexao().getConnection(); // Obtendo conexão
+        hospedesDAO = new HospedesDAO(conexao); // Passando a conexão para o DAO
+        listarHospedes(); // Chamando o método para listar os hóspedes
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(null, "Erro ao conectar ao banco: " + e.getMessage());
     }
+}
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -29,23 +54,23 @@ public class TelaHospedes extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        txtNome = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
+        txtSexo = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
+        txtDataNascimento = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
-        jTextField4 = new javax.swing.JTextField();
+        txtCpf = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
-        jTextField5 = new javax.swing.JTextField();
+        txtTelefone = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
-        jTextField6 = new javax.swing.JTextField();
+        txtEmail = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        tblHospedes = new javax.swing.JTable();
+        CadastrarButton = new javax.swing.JButton();
+        AtualizarButton = new javax.swing.JButton();
+        ExcluirButton = new javax.swing.JButton();
+        CarregarButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(204, 51, 0));
@@ -59,34 +84,28 @@ public class TelaHospedes extends javax.swing.JFrame {
         jLabel2.setFont(new java.awt.Font("Segoe UI", 3, 12)); // NOI18N
         jLabel2.setText("Nome");
 
-        jTextField1.setText("jTextField1");
+        txtNome.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtNomeActionPerformed(evt);
+            }
+        });
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 3, 12)); // NOI18N
         jLabel3.setText("Sexo");
 
-        jTextField2.setText("jTextField2");
-
         jLabel4.setFont(new java.awt.Font("Segoe UI", 3, 12)); // NOI18N
         jLabel4.setText("Data de Nascimento");
-
-        jTextField3.setText("jTextField3");
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 3, 12)); // NOI18N
         jLabel5.setText("CPF");
 
-        jTextField4.setText("jTextField4");
-
         jLabel6.setFont(new java.awt.Font("Segoe UI", 3, 12)); // NOI18N
         jLabel6.setText("Telefone");
-
-        jTextField5.setText("jTextField5");
 
         jLabel7.setFont(new java.awt.Font("Segoe UI", 3, 12)); // NOI18N
         jLabel7.setText("Email");
 
-        jTextField6.setText("jTextField6");
-
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tblHospedes.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -97,25 +116,41 @@ public class TelaHospedes extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        tblHospedes.setModel(new DefaultTableModel(     new Object[][]{},      new String[]{"Nome", "CPF", "DataNascimento", "Telefone", "Email", "Sexo"} ));
+        tblHospedes.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblHospedesMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(tblHospedes);
 
-        jButton1.setText("Cadastrar");
-
-        jButton2.setText("Atualizar");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        CadastrarButton.setText("Cadastrar");
+        CadastrarButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                CadastrarButtonActionPerformed(evt);
             }
         });
 
-        jButton3.setText("Excluir");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        AtualizarButton.setText("Atualizar");
+        AtualizarButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                AtualizarButtonActionPerformed(evt);
             }
         });
 
-        jButton4.setText("Carregar Campos");
+        ExcluirButton.setText("Excluir");
+        ExcluirButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ExcluirButtonActionPerformed(evt);
+            }
+        });
+
+        CarregarButton.setText("Carregar Campos");
+        CarregarButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CarregarButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -125,13 +160,13 @@ public class TelaHospedes extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jButton1)
+                        .addComponent(CadastrarButton)
                         .addGap(18, 18, 18)
-                        .addComponent(jButton2)
+                        .addComponent(AtualizarButton)
                         .addGap(29, 29, 29)
-                        .addComponent(jButton3)
+                        .addComponent(ExcluirButton)
                         .addGap(18, 18, 18)
-                        .addComponent(jButton4)
+                        .addComponent(CarregarButton)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -150,15 +185,15 @@ public class TelaHospedes extends javax.swing.JFrame {
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                                .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(txtSexo, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addGap(42, 42, 42)
                                                 .addComponent(jLabel4)
                                                 .addGap(18, 18, 18)
-                                                .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                            .addComponent(jTextField5, javax.swing.GroupLayout.DEFAULT_SIZE, 650, Short.MAX_VALUE)
-                                            .addComponent(jTextField4)
-                                            .addComponent(jTextField1)
-                                            .addComponent(jTextField6))))
+                                                .addComponent(txtDataNascimento, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addComponent(txtTelefone, javax.swing.GroupLayout.DEFAULT_SIZE, 650, Short.MAX_VALUE)
+                                            .addComponent(txtCpf)
+                                            .addComponent(txtNome)
+                                            .addComponent(txtEmail))))
                                 .addGap(0, 0, Short.MAX_VALUE)))
                         .addContainerGap())))
         );
@@ -170,34 +205,34 @@ public class TelaHospedes extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtNome, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtSexo, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel4)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtDataNascimento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtCpf, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtTelefone, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel6))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel7)
-                    .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2)
-                    .addComponent(jButton3)
-                    .addComponent(jButton4))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(CadastrarButton)
+                    .addComponent(AtualizarButton)
+                    .addComponent(ExcluirButton)
+                    .addComponent(CarregarButton))
+                .addContainerGap(18, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -219,13 +254,50 @@ public class TelaHospedes extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
+    private void AtualizarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AtualizarButtonActionPerformed
+      try {
+          atualizarHospede();
+      } catch (SQLException ex) {
+          Logger.getLogger(TelaHospedes.class.getName()).log(Level.SEVERE, null, ex);
+      }
+        listarHospedes();
+        limparCamposHospede();
+    }//GEN-LAST:event_AtualizarButtonActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    private void ExcluirButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ExcluirButtonActionPerformed
+
+        excluirHospede();
+        listarHospedes();
+        limparCamposHospede();
+    }//GEN-LAST:event_ExcluirButtonActionPerformed
+
+    private void CarregarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CarregarButtonActionPerformed
+        carregarCampos();
+    }//GEN-LAST:event_CarregarButtonActionPerformed
+
+    private void CadastrarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CadastrarButtonActionPerformed
+        cadastrarHospedes();
+    }//GEN-LAST:event_CadastrarButtonActionPerformed
+
+    private void txtNomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNomeActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton3ActionPerformed
+    }//GEN-LAST:event_txtNomeActionPerformed
+
+    private void tblHospedesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblHospedesMouseClicked
+          int selectedRow = tblHospedes.getSelectedRow();
+    System.out.println("📌 Linha clicada: " + selectedRow);
+
+    if (selectedRow != -1) {
+        txtNome.setText(tblHospedes.getValueAt(selectedRow, 1).toString());
+        txtCpf.setText(tblHospedes.getValueAt(selectedRow, 2).toString());
+        txtTelefone.setText(tblHospedes.getValueAt(selectedRow, 3).toString());
+        txtEmail.setText(tblHospedes.getValueAt(selectedRow, 4).toString());
+        txtSexo.setText(tblHospedes.getValueAt(selectedRow, 5).toString());;
+        txtDataNascimento.setText(tblHospedes.getValueAt(selectedRow, 8).toString());
+
+        System.out.println("📌 Paciente carregado: " + txtNome.getText());
+    }
+    }//GEN-LAST:event_tblHospedesMouseClicked
 
     /**
      * @param args the command line arguments
@@ -264,10 +336,10 @@ public class TelaHospedes extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
+    private javax.swing.JButton AtualizarButton;
+    private javax.swing.JButton CadastrarButton;
+    private javax.swing.JButton CarregarButton;
+    private javax.swing.JButton ExcluirButton;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -277,12 +349,175 @@ public class TelaHospedes extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
-    private javax.swing.JTextField jTextField5;
-    private javax.swing.JTextField jTextField6;
+    private javax.swing.JTable tblHospedes;
+    private javax.swing.JTextField txtCpf;
+    private javax.swing.JTextField txtDataNascimento;
+    private javax.swing.JTextField txtEmail;
+    private javax.swing.JTextField txtNome;
+    private javax.swing.JTextField txtSexo;
+    private javax.swing.JTextField txtTelefone;
     // End of variables declaration//GEN-END:variables
+private void cadastrarHospedes() {
+    System.out.println("✅ Método cadastrarHospede() foi chamado!");
+    // Capturando os dados do formulário
+    String nome = txtNome.getText();
+    String cpf = txtCpf.getText().trim();
+    String telefone = txtTelefone.getText().trim();
+    String email = txtEmail.getText().trim();
+    String sexo = txtSexo.getText().trim();
+    String dataNascimento = txtDataNascimento.getText().trim();
+
+    if (cpf.isEmpty() || telefone.isEmpty() || nome.isEmpty()) {
+        JOptionPane.showMessageDialog(null, "❌ Preencha todos os campos obrigatórios!", "Erro", JOptionPane.ERROR_MESSAGE);
+        System.out.println("❌ ERRO: Algum campo obrigatório está vazio!");
+        return;
+    }
+
+    try {
+        // Criando o objeto HospedeDTO
+        HospedesDTO novoHospede = new HospedesDTO(nome, cpf, dataNascimento, telefone, email, sexo);
+        
+        System.out.println("Dados capturados do formulario: " + novoHospede.toString());
+
+        // Query SQL para inserir o hóspede
+        String query = "INSERT INTO hospedes (nome, cpf, telefone, email, sexo, dataNascimento) VALUES (?, ?, ?, ?, ?, ?)";
+
+        // Executa o comando SQL usando o método da classe Conexao
+        boolean sucesso = Conexao.executarComandoSQL(query, nome, cpf, telefone, email, sexo, dataNascimento);
+
+        if (sucesso) {
+            JOptionPane.showMessageDialog(null, "Hóspede cadastrado com sucesso.");
+            listarHospedes(); // Atualiza a tabela
+            limparCamposHospede();
+        } else {
+            JOptionPane.showMessageDialog(null, "Erro ao cadastrar hóspede.", "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(null, "Erro ao cadastrar hóspede: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+    }
 }
+
+private void atualizarHospede() throws SQLException {
+    int selectedRow = tblHospedes.getSelectedRow(); // 🔹 Obtém a linha selecionada
+    System.out.println("📌 Tentando atualizar... Linha selecionada: " + selectedRow);
+
+    if (selectedRow == -1) {  // Se nenhuma linha estiver selecionada, exibe erro
+        JOptionPane.showMessageDialog(null, "❌ Nenhum hóspede foi selecionado!", "Erro", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    // Obtém o CPF do hóspede selecionado
+    String cpfHospedeSelecionado = (String) tblHospedes.getValueAt(selectedRow, 1); // Coluna 1 = CPF
+    System.out.println("📌 CPF do hóspede selecionado: " + cpfHospedeSelecionado);
+
+    if (cpfHospedeSelecionado.isEmpty()) {
+        JOptionPane.showMessageDialog(null, "CPF do hóspede inválido.", "Erro", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    // Obtém os dados dos campos
+    String nome = txtNome.getText();
+    String cpf = txtCpf.getText();
+    String telefone = txtTelefone.getText();
+    String email = txtEmail.getText();
+    String sexo = txtSexo.getText();
+    String dataNascimento = txtDataNascimento.getText();
+
+    if (nome.isEmpty() || cpf.isEmpty() || telefone.isEmpty() || email.isEmpty() || sexo.isEmpty() || dataNascimento.isEmpty()) {
+        JOptionPane.showMessageDialog(null, "❌ Preencha todos os campos!", "Erro", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    // SQL para atualizar o hóspede
+    String query = "UPDATE hospedes SET nome = ?, cpf = ?, telefone = ?, email = ?, sexo = ?, dataNascimento = ? WHERE cpf = ?";
+
+    boolean sucesso = Conexao.executarComandoSQL(query, nome, cpf, telefone, email, sexo, dataNascimento, cpfHospedeSelecionado);
+
+    if (sucesso) {
+        JOptionPane.showMessageDialog(null, "✅ Hóspede atualizado com sucesso.");
+        listarHospedes();  // Atualiza a tabela
+    } else {
+        JOptionPane.showMessageDialog(null, "❌ Erro ao atualizar o hóspede.", "Erro", JOptionPane.ERROR_MESSAGE);
+    }
+}
+
+private void excluirHospede() {
+    int selectedRow = tblHospedes.getSelectedRow(); // Obtém a linha selecionada
+
+    if (selectedRow == -1) {  // Verifica se um hóspede foi selecionado
+        JOptionPane.showMessageDialog(null, "Selecione um hóspede para excluir.", "Erro", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    // Obtém o CPF do hóspede selecionado
+    String cpfHospedeSelecionado = (String) tblHospedes.getValueAt(selectedRow, 1); // Coluna 1 = CPF
+    System.out.println("CPF do hóspede a excluir: " + cpfHospedeSelecionado);  // 🔥 Debug
+
+    String query = "DELETE FROM hospedes WHERE cpf = ?";
+
+    // Chama o método do ConexaoDAO para executar a exclusão
+    boolean sucesso = Conexao.executarComandoSQL(query, cpfHospedeSelecionado);
+
+    if (sucesso) {
+        JOptionPane.showMessageDialog(null, "Hóspede excluído com sucesso.");
+        listarHospedes();  // Atualiza a lista de hóspedes
+    } else {
+        JOptionPane.showMessageDialog(null, "Erro ao excluir o hóspede.", "Erro", JOptionPane.ERROR_MESSAGE);
+    }
+}
+
+private void listarHospedes() {
+    try {
+        String query = "SELECT * FROM hospedes";
+        
+        // Usando a classe Conexao para obter a conexão
+        try (Connection conn = new Conexao().getConnection(); // Obtém a conexão
+             PreparedStatement pst = conn.prepareStatement(query);
+             ResultSet rs = pst.executeQuery()) {
+
+            DefaultTableModel model = (DefaultTableModel) tblHospedes.getModel();
+            model.setNumRows(0); // Limpa a tabela antes de adicionar novos dados
+
+            while (rs.next()) {
+                Object[] rowData = {
+                    rs.getString("nome"),
+                    rs.getString("cpf"),
+                    rs.getString("dataNascimento"),
+                    rs.getString("telefone"),
+                    rs.getString("email"),
+                    rs.getString("sexo")
+                };
+                model.addRow(rowData);
+            }
+            model.fireTableDataChanged();
+            tblHospedes.repaint(); // Atualiza a tabela
+            tblHospedes.revalidate();
+        }
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(null, "Erro ao carregar os hóspedes: " + e.getMessage());
+    }
+}
+
+private void carregarCampos() {
+    int selectedRow = tblHospedes.getSelectedRow();
+    if (selectedRow != -1) {
+        txtNome.setText(tblHospedes.getValueAt(selectedRow, 0).toString());
+        txtCpf.setText(tblHospedes.getValueAt(selectedRow, 1).toString());
+        txtDataNascimento.setText(tblHospedes.getValueAt(selectedRow, 2).toString());
+        txtTelefone.setText(tblHospedes.getValueAt(selectedRow, 3).toString());
+        txtEmail.setText(tblHospedes.getValueAt(selectedRow, 4).toString());
+        txtSexo.setText(tblHospedes.getValueAt(selectedRow, 5).toString());
+    } else {
+        System.out.println("Nenhum hóspede selecionado.");
+    }
+}
+
+private void limparCamposHospede() {
+    txtNome.setText(null);
+    txtCpf.setText(null);
+    txtDataNascimento.setText(null);
+    txtTelefone.setText(null);
+    txtEmail.setText(null);
+    txtSexo.setText(null);
+    txtNome.requestFocus();  
+} }

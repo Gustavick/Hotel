@@ -7,28 +7,31 @@ package com.mycompany.photel;
 import ConexaoBD.Conexao;
 import Hotel.DAO.UsuarioDAO;
 import Hotel.DTO.UsuarioDTO;
+import Hotel.gui.TelaHospedes;
 import Hotel.gui.TelaLogin;
 import java.sql.Connection;
 import java.sql.SQLException;
+import javax.swing.JOptionPane;
 
 /**
  *
  * @author luizg
  */
 public class LoginController {
-    
-    
-    
-    
-public void logarUsuario(TelaLogin telaL) throws SQLException {
-    Connection conexao = new Conexao().getConnection();
-   
-    // Cria um objeto UsuarioDTO com os dados fornecidos pela tela
-    UsuarioDAO usuario = new UsuarioDAO();
-    usuario.validarlogin(telaL.getTxtNome().getText(), telaL.getTxtSenha().getText());
-    
-    // Passa o objeto usuario para o método autenticacaoUsuario
-   
-}
 
-}
+    public void logarUsuario(TelaLogin telaL) throws SQLException {
+        UsuarioDAO usuario = new UsuarioDAO();
+        boolean loginValido = usuario.validarlogin(telaL.getTxtNome().getText(), telaL.getTxtSenha().getText());
+        
+        if (loginValido) {
+            JOptionPane.showMessageDialog(telaL, "Login realizado com sucesso");
+            // Abre a TelaHospedes
+            TelaHospedes telaHospedes = new TelaHospedes();
+            telaHospedes.setVisible(true);
+            telaL.dispose(); // Fecha a tela de login após login bem-sucedido
+        } else {
+            JOptionPane.showMessageDialog(telaL, "ERRO! Verifique se os campos estão corretos");
+        }
+    }
+} 
+

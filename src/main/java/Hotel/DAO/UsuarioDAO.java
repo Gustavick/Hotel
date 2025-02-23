@@ -16,7 +16,7 @@ import java.util.List;
 
 public class UsuarioDAO {
 
-    public void validarlogin(String nome, String senha) throws SQLException {
+    public boolean validarlogin(String nome, String senha) throws SQLException {
         Connection conexao = null;
         PreparedStatement statement = null;
         ResultSet rs = null;
@@ -31,12 +31,13 @@ public class UsuarioDAO {
             rs = statement.executeQuery();
             
             if (rs.next()) {
-                System.out.println("Possui");
+                return true;  // Login válido
             } else {
-                System.out.println("Não possui");
+                return false; // Login inválido
             }
         } catch (SQLException e) {
             System.err.println("Erro ao validar login: " + e.getMessage());
+            return false;
         } finally {
             // Fechar os recursos
             if (rs != null) rs.close();
@@ -45,6 +46,7 @@ public class UsuarioDAO {
         }
     }
 }
+
 
 
 
