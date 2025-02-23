@@ -4,7 +4,7 @@
  */
 package ConexaoBD;
 
-import ConexaoBD.connectionFactory;
+import ConexaoBD.Conexao;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -14,7 +14,7 @@ import java.sql.SQLException;
  */
 public class testeConexao {
     public static void main(String[] args) throws SQLException {
-        Connection conexao = connectionFactory.getConnection();
+        Connection conexao = Conexao.getConnection();
         if (conexao != null) {
             System.out.println("✅ Conexão bem-sucedida!");
             conexao.close();
