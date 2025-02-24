@@ -4,12 +4,9 @@
  */
 package com.mycompany.photel;
 
-import ConexaoBD.Conexao;
 import Hotel.DAO.UsuarioDAO;
-import Hotel.DTO.UsuarioDTO;
 import Hotel.gui.TelaHospedes;
 import Hotel.gui.TelaLogin;
-import java.sql.Connection;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
 

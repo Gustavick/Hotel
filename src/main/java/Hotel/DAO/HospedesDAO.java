@@ -52,25 +52,6 @@ public boolean excluir(String cpf) throws SQLException {
     }
 }
 
-    public HospedesDTO buscarPorCpf(String cpf) throws SQLException {
-        String sql = "SELECT * FROM hospedes WHERE cpf=?";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, cpf);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return new HospedesDTO(
-                    rs.getString("nome"),
-                    rs.getString("cpf"),
-                    rs.getString("dataNascimento"),
-                    rs.getString("telefone"),
-                    rs.getString("email"),
-                    rs.getString("sexo")
-                );
-            }
-        }
-        return null;
-    }
-
     public List<HospedesDTO> listarTodos() {
         List<HospedesDTO> hospedes = new ArrayList<>();
         String sql = "SELECT * FROM hospedes";
